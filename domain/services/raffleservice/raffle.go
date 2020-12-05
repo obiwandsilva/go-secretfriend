@@ -1,10 +1,11 @@
-package domain
+package raffleservice
 
 import (
+	"github.com/obiwandsilva/go-secretfriend/domain/entities"
 	"math/rand"
 )
 
-func Draw(friendsList []Friend, pool []Friend, pairs Pairs) Pairs {
+func Draw(friendsList []entities.Friend, pool []entities.Friend, pairs entities.Pairs) entities.Pairs {
 	if len(friendsList) == 0 {
 		return pairs
 	}
@@ -12,7 +13,7 @@ func Draw(friendsList []Friend, pool []Friend, pairs Pairs) Pairs {
 	// Get the first of the list
 	picker := friendsList[0]
 	// Remove the picker from the list
-	newFriendsList := append([]Friend{}, friendsList[1:]...)
+	newFriendsList := append([]entities.Friend{}, friendsList[1:]...)
 
 	var i int
 	picked := picker
@@ -29,4 +30,12 @@ func Draw(friendsList []Friend, pool []Friend, pairs Pairs) Pairs {
 	newPool := append(pool[:i], pool[i+1:]...)
 
 	return Draw(newFriendsList, newPool, pairs)
+}
+
+func GeneratePool(friendsList []entities.Friend) (pool []entities.Friend) {
+	for _, f := range friendsList {
+		pool = append(pool, f)
+	}
+
+	return pool
 }

@@ -3,12 +3,12 @@ package file
 import (
 	"bufio"
 	"fmt"
-	"github.com/obiwandsilva/go-secretfriend/domain"
+	"github.com/obiwandsilva/go-secretfriend/domain/entities"
 	"os"
 	"strings"
 )
 
-func ReadFile(filePath string) ([]domain.Friend, error) {
+func ReadFile(filePath string) ([]entities.Friend, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("error when opening file %s: %v", filePath, err)
@@ -27,7 +27,7 @@ func ReadFile(filePath string) ([]domain.Friend, error) {
 		return nil, fmt.Errorf("friends list cannot have less than 3 friends")
 	}
 
-	friendsList := make([]domain.Friend, 0)
+	friendsList := make([]entities.Friend, 0)
 	for i, friendData := range friendsData {
 		split := strings.Split(friendData, ";")
 
@@ -37,7 +37,7 @@ func ReadFile(filePath string) ([]domain.Friend, error) {
 			return nil, fmt.Errorf("invalid format at line %d", i+1)
 		}
 
-		friendsList = append(friendsList, domain.Friend{
+		friendsList = append(friendsList, entities.Friend{
 			Name:  split[0],
 			PhoneNumber: split[1],
 		})

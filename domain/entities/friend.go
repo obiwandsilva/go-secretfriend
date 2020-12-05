@@ -1,4 +1,4 @@
-package domain
+package entities
 
 // Friend ...
 type Friend struct {
