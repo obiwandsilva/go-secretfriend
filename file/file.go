@@ -3,67 +3,45 @@ package file
 import (
 	"bufio"
 	"fmt"
-	"log"
-	"math/rand"
+	"github.com/obiwandsilva/go-secretfriend/domain"
 	"os"
 	"strings"
 )
 
-type Pairs map[string]string
-
-func ReadFile(filePath string) {
+func ReadFile(filePath string) ([]domain.Friend, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Fatalf("error when opening file %s: %v", filePath, err)
+		return nil, fmt.Errorf("error when opening file %s: %v", filePath, err)
 	}
 
 	reader := bufio.NewReader(file)
 
 	content := make([]byte, 1024)
-	_, err = reader.Read(content)
+	n, err := reader.Read(content)
 	if err != nil {
-		log.Fatalf("error when opening file %s: %v", filePath, err)
+		return nil, fmt.Errorf("error when opening file %s: %v", filePath, err)
 	}
 
-	friendsList := strings.Split(string(content), "\n")
-	if len(friendsList) == 0 {
-		log.Println("Empty list")
-		os.Exit(0)
+	friendsData := strings.Split(string(content[:n]), "\n")
+	if len(friendsData) < 3 {
+		return nil, fmt.Errorf("friends list cannot have less than 3 friends")
 	}
 
-	log.Printf("Friends List: %d\n", len(friendsList))
-	for _, friendName := range friendsList {
-		fmt.Println(friendName)
+	friendsList := make([]domain.Friend, 0)
+	for i, friendData := range friendsData {
+		split := strings.Split(friendData, ";")
+
+		if len(split) != 2 ||
+			len(split[0]) == 0 ||
+			len(split[1]) == 0 {
+			return nil, fmt.Errorf("invalid format at line %d", i+1)
+		}
+
+		friendsList = append(friendsList, domain.Friend{
+			Name:  split[0],
+			PhoneNumber: split[1],
+		})
 	}
 
-	if len(friendsList) % 2 != 0 {
-		log.Println("adding an extra entry")
-		friendsList = append(friendsList, "CHOOSE ONE, CHOSEN ONE!")
-	}
-
-	pairs := draw(friendsList, Pairs{})
-
-	log.Println("List of Pairs:")
-	for k, v := range pairs {
-		fmt.Printf("%s <> %s\n", k, v)
-	}
-}
-
-func draw(friendsList []string, pairs Pairs) Pairs {
-	if len(friendsList) == 0 {
-		return pairs
-	}
-
-	i := rand.Intn(len(friendsList))
-	friendA := friendsList[i]
-
-	newFriendsList := append(friendsList[:i], friendsList[i+1:]...)
-
-	j := rand.Intn(len(newFriendsList))
-	friendB := friendsList[j]
-
-	newFriendsList = append(newFriendsList[:j], newFriendsList[j+1:]...)
-	pairs[friendA] = friendB
-
-	return draw(newFriendsList, pairs)
+	return friendsList, nil
 }
