@@ -1,0 +1,113 @@
+swagger: "2.0"
+info:
+  description: "Secret Friend API."
+  version: "1.0.0"
+  title: "Secret Friend"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "wanderson.olivs@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+schemes:
+  - "http"
+  - "https"
+paths:
+  /friends:
+    post:
+      tags:
+        - "friends"
+      summary: "Add list of friends"
+      description: "Create an object with the list of friends on the s3 bucket"
+      produces:
+        - "text/plain"
+      parameters:
+        - in: "body"
+          name: "friendsList"
+          description: "Object containing a list of friends and their data"
+          required: true
+          schema:
+            $ref: "#/definitions/FriendsList"
+      responses:
+        "201":
+          description: "Created"
+    get:
+      tags:
+        - "friends"
+      summary: "Show the friends object from s3 bucket"
+      description: ""
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "OK"
+          $ref: "#/definitions/FriendsList"
+  /friends/draw:
+    post:
+      tags:
+        - "friends"
+      summary: "Draw friends list"
+      description: "Draw friends list and save on s3 bucket"
+      responses:
+        "200":
+          description: "Successfully drawn"
+  /{phoneNumber}/senha:
+    get:
+      tags:
+        - "friends"
+      summary: "Returns the friends secret key"
+      description: ""
+      produces:
+        - "text/html"
+      parameters:
+        - name: "phoneNumber"
+          in: "path"
+          description: "Friends phone number"
+          required: true
+          type: "string"
+      responses:
+        "201":
+          description: "successful operation"
+  /{phoneNumber}/{secretKey}/amigo:
+    get:
+      tags:
+        - "friend"
+      summary: "Return the secret friend for the given phone number"
+      description: ""
+      produces:
+        - "text/html"
+      parameters:
+        - name: "phoneNumber"
+          in: "path"
+          description: "Picker phone number"
+          required: true
+          type: "string"
+        - name: "secretKey"
+          in: "path"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+        "403":
+          description: "Forbidden"
+definitions:
+  Friend:
+    type: "object"
+    required:
+      - "name"
+      - "phoneNumber"
+    properties:
+      name:
+        type: "string"
+      phoneNumber:
+        type: "string"
+  FriendsList:
+    type: "object"
+    required:
+      - "friendsList"
+    properties:
+      friendsList:
+        type: "array"
+        items:
+          $ref: "#/definitions/Friend"

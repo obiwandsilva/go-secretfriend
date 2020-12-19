@@ -8,7 +8,17 @@ import (
 	"log"
 )
 
+type TwilioInfo struct {
+	sid string
+	authToken string
+	from string
+}
+
 func SendMessage(message, phoneNumber string) error {
+	return sendThroughSNS(message, phoneNumber)
+}
+
+func sendThroughSNS(message, phoneNumber string) error {
 	sess, err := session.NewSession()
 	if err != nil {
 		log.Println("could not start aws session")

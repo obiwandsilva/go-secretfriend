@@ -3,6 +3,7 @@ package raffleservice
 import (
 	"github.com/obiwandsilva/go-secretfriend/domain/entities"
 	"math/rand"
+	"time"
 )
 
 func Draw(friendsList []entities.Friend, pool []entities.Friend, pairs entities.Pairs) entities.Pairs {
@@ -20,6 +21,7 @@ func Draw(friendsList []entities.Friend, pool []entities.Friend, pairs entities.
 
 	// Picker friend cannot be equal the picked friend
 	for picked == picker {
+		rand.Seed(time.Now().UnixNano())
 		i = rand.Intn(len(pool))
 		picked = pool[i]
 	}
@@ -33,8 +35,8 @@ func Draw(friendsList []entities.Friend, pool []entities.Friend, pairs entities.
 }
 
 func GeneratePool(friendsList []entities.Friend) (pool []entities.Friend) {
-	for _, f := range friendsList {
-		pool = append(pool, f)
+	for i := len(friendsList)-1; i > -1; i-- {
+		pool = append(pool, friendsList[i])
 	}
 
 	return pool

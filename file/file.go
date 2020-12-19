@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func ReadFile(filePath string) ([]entities.Friend, error) {
+func ReadFile(filePath string, emptyPhoneNumber bool) ([]entities.Friend, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("error when opening file %s: %v", filePath, err)
@@ -33,7 +33,7 @@ func ReadFile(filePath string) ([]entities.Friend, error) {
 
 		if len(split) != 2 ||
 			len(split[0]) == 0 ||
-			len(split[1]) == 0 {
+			(!emptyPhoneNumber && len(split[1]) == 0) {
 			return nil, fmt.Errorf("invalid format at line %d", i+1)
 		}
 

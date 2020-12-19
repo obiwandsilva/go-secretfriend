@@ -5,38 +5,48 @@ import (
 	"github.com/obiwandsilva/go-secretfriend/domain/entities"
 	"github.com/obiwandsilva/go-secretfriend/domain/services/raffleservice"
 	"github.com/obiwandsilva/go-secretfriend/file"
-	"github.com/obiwandsilva/go-secretfriend/sms"
+	"github.com/obiwandsilva/go-secretfriend/resources/sms"
 	"log"
+	"os"
 )
 
 func main() {
 	log.Println("Starting raffle...")
 
-	filePath := "friends"
+	filePath := os.Getenv("SECRET_FRIENDS_FILE")
 
 	log.Printf("reading friends list from file %s\n", filePath)
-	friendsList, err := file.ReadFile(filePath)
+	friendsList, err := file.ReadFile(filePath, true)
 	if err != nil {
 		log.Panicf("could not read the file: %v", err)
 	}
 
-	log.Println("pool created")
 	pool := raffleservice.GeneratePool(friendsList)
+	log.Println("pool created")
+
 	pairs := entities.Pairs{}
 
 	log.Println("drawing participants")
 	pairs = raffleservice.Draw(friendsList, pool, pairs)
 
-	log.Println("sending SMS")
-	err = sendMessages(pairs)
-	if err != nil {
-		log.Fatal(err)
-	}
+	printPairs(pairs)
 }
 
 func printPairs(pairs entities.Pairs) {
+	log.Println("printing pairs")
 	for picker, picked := range pairs {
-		fmt.Printf("Picker: %s\nPicked: %s\n####################\n", picker.Name, picked.Name)
+		message := fmt.Sprintf(
+			"Roi. %s, né? Já passou de 16h20 mas tá na hora de saber seu ou sua sorteadx. Segue o nome. Guarde bem: %s",
+			picker.Name,
+			picked.Name,
+		)
+
+		fmt.Printf(
+			"Picker: %s\nPicked: %s\nMessage: %s\n####################\n",
+			picker.Name,
+			picked.Name,
+			message,
+		)
 	}
 }
 
